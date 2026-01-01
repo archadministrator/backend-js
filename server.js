@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
-
+app.use(express.static("public"));
 
 // Sample DB
 let todos = [
@@ -40,11 +40,11 @@ app.post("/todos", (req, res)=>{
 
 
 app.put("/todos/:id", (req, res)=>{
-    const id = pasrseInt(req.params.id);
+    const id = parseInt(req.params.id);
     const {title, completed} = req.body;
 
     const todo = todos.find(t => t.id === id);
-    if (!todo) return res.status(404).json({mesasge: "Task not found!"});
+    if (!todo) return res.status(404).json({message: "Task not found!"});
 
     if (title != undefined) todo.title = title;
     if (completed !== undefined) todo.completed = completed;
@@ -69,6 +69,3 @@ app.delete("/todos/:id", (req, res)=>{
 app.listen(3000, ()=>{
     console.log("Server is running good on http://localhost:3000");
 })
-
-
-
