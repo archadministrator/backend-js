@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App - Full Stack</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .stat-card:nth-child(1) .stat-number { color: #667eea; }
+    .stat-card:nth-child(2) .stat-number { color: #f59e0b; }
+    .stat-card:nth-child(3) .stat-number { color: #10b981; }
+
+    .input-section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    #todoInput {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #todoInput:focus {
+      border-color: #667eea;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-btn {
+      flex: 1;
+      padding: 12px;
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .filter-btn:hover {
+      background: #f3f4f6;
+    }
+
+    .filter-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .todo-list {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      transition: background 0.2s;
+    }
+
+    .todo-item:hover {
+      background: #f9fafb;
+    }
+
+    .todo-item:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #d1d5db;
+      border-radius: 6px;
+      margin-right: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+
+    .checkbox:hover {
+      border-color: #10b981;
+    }
+
+    .checkbox.checked {
+      background: #10b981;
+      border-color: #10b981;
+    }
+
+    .checkbox.checked::after {
+      content: '✓';
+      color: white;
+      font-weight: bold;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 1rem;
+      color: #1f2937;
+    }
+
+    .todo-text.completed {
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .todo-edit-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 2px solid #667eea;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      background: transparent;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .icon-btn.edit { color: #3b82f6; }
+    .icon-btn.edit:hover { background: #dbeafe; }
+
+    .icon-btn.delete { color: #ef4444; }
+    .icon-btn.delete:hover { background: #fee2e2; }
+
+    .icon-btn.save { color: #10b981; }
+    .icon-btn.save:hover { background: #d1fae5; }
+
+    .icon-btn.cancel { color: #6b7280; }
+    .icon-btn.cancel:hover { background: #f3f4f6; }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 1.1rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 30px;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2rem; }
+      .stats { grid-template-columns: 1fr; }
+      .input-group { flex-direction: column; }
+      .filters { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📝 Todo App</h1>
+      <p class="subtitle">Quản lý công việc hiệu quả</p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Tổng số</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeCount">0</div>
+        <div class="stat-label">Đang làm</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="completedCount">0</div>
+        <div class="stat-label">Hoàn thành</div>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <div class="input-group">
+        <input type="text" id="todoInput" placeholder="Thêm công việc mới..." />
+        <button class="btn btn-primary" onclick="addTodo()">➕ Thêm</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterTodos('all')">Tất cả</button>
+      <button class="filter-btn" onclick="filterTodos('active')">Đang làm</button>
+      <button class="filter-btn" onclick="filterTodos('completed')">Hoàn thành</button>
+    </div>
+
+    <div class="todo-list" id="todoList">
+      <div class="loading">Đang tải...</div>
+    </div>
+
+    <footer>
+      <p>Full Stack Todo App với Express.js & Vanilla JS</p>
+    </footer>
+  </div>
+
+  <script>
+    // API URL - Thay đổi nếu cần
+    const API_URL = 'http://localhost:3000/api/todos';
+    let todos = [];
+    let currentFilter = 'all';
+    let editingId = null;
+
+    // Khởi tạo
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTodos();
+      
+      // Enter để thêm todo
+      document.getElementById('todoInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addTodo();
+      });
+    });
+
+    // Load todos từ API
+    async function loadTodos() {
+      try {
+        const response = await fetch(API_URL);
+        todos = await response.json();
+        renderTodos();
+        updateStats();
+      } catch (error) {
+        console.error('Lỗi khi tải todos:', error);
+        document.getElementById('todoList').innerHTML = 
+          '<div class="empty-state">Không thể kết nối đến server. Vui lòng kiểm tra lại.</div>';
+      }
+    }
+
+    // Thêm todo mới
+    async function addTodo() {
+      const input = document.getElementById('todoInput');
+      const title = input.value.trim();
+      
+      if (!title) return;
+      
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title })
+        });
+        
+        const newTodo = await response.json();
+        todos.push(newTodo);
+        input.value = '';
+        renderTodos();
+        updateStats();
+      } catch (error) {
+        console.error('Lỗi khi thêm todo:', error);
+        alert('Không thể thêm todo. Vui lòng thử lại.');
+      }
+    }
+
+    // Toggle hoàn thành
+    async function toggleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (!todo) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ completed: !todo.completed })
+        });
+        
+        const updatedTodo = await response.json();
+        todos = todos.map(t => t.id === id ? updatedTodo : t);
+        renderTodos();
+        updateStats();
+      } catch (error) {
+        console.error('Lỗi khi cập nhật todo:', error);
+      }
+    }
+
+    // Bắt đầu edit
+    function startEdit(id) {
+      editingId = id;
+      renderTodos();
+    }
+
+    // Lưu edit
+    async function saveEdit(id) {
+      const input = document.querySelector(`#edit-${id}`);
+      const title = input.value.trim();
+      
+      if (!title) {
+        cancelEdit();
+        return;
+      }
+      
+      try {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title })
+        });
+        
+        const updatedTodo = await response.json();
+        todos = todos.map(t => t.id === id ? updatedTodo : t);
+        editingId = null;
+        renderTodos();
+      } catch (error) {
+        console.error('Lỗi khi sửa todo:', error);
+      }
+    }
+
+    // Hủy edit
+    function cancelEdit() {
+      editingId = null;
+      renderTodos();
+    }
+
+    // Xóa todo
+    async function deleteTodo(id) {
+      if (!confirm('Bạn có chắc muốn xóa công việc này?')) return;
+      
+      try {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        todos = todos.filter(t => t.id !== id);
+        renderTodos();
+        updateStats();
+      } catch (error) {
+        console.error('Lỗi khi xóa todo:', error);
+      }
+    }
+
+    // Lọc todos
+    function filterTodos(filter) {
+      currentFilter = filter;
+      
+      // Cập nhật UI filter buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      renderTodos();
+    }
+
+    // Render todos
+    function renderTodos() {
+      const filtered = todos.filter(todo => {
+        if (currentFilter === 'active') return !todo.completed;
+        if (currentFilter === 'completed') return todo.completed;
+        return true;
+      });
+      
+      const listEl = document.getElementById('todoList');
+      
+      if (filtered.length === 0) {
+        const emptyMessage = currentFilter === 'all' 
+          ? 'Chưa có công việc nào' 
+          : currentFilter === 'active'
+          ? 'Không có công việc đang làm'
+          : 'Không có công việc hoàn thành';
+        
+        listEl.innerHTML = `<div class="empty-state">${emptyMessage}</div>`;
+        return;
+      }
+      
+      listEl.innerHTML = filtered.map(todo => {
+        if (editingId === todo.id) {
+          return `
+            <div class="todo-item">
+              <input type="text" id="edit-${todo.id}" class="todo-edit-input" value="${todo.title}" 
+                onkeypress="if(event.key==='Enter') saveEdit(${todo.id}); if(event.key==='Escape') cancelEdit();" autofocus />
+              <div class="actions">
+                <button class="icon-btn save" onclick="saveEdit(${todo.id})">✓</button>
+                <button class="icon-btn cancel" onclick="cancelEdit()">✕</button>
+              </div>
+            </div>
+          `;
+        }
+        
+        return `
+          <div class="todo-item">
+            <div class="checkbox ${todo.completed ? 'checked' : ''}" onclick="toggleTodo(${todo.id})"></div>
+            <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.title}</span>
+            <div class="actions">
+              <button class="icon-btn edit" onclick="startEdit(${todo.id})">✏️</button>
+              <button class="icon-btn delete" onclick="deleteTodo(${todo.id})">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Cập nhật thống kê
+    function updateStats() {
+      document.getElementById('totalCount').textContent = todos.length;
+      document.getElementById('activeCount').textContent = todos.filter(t => !t.completed).length;
+      document.getElementById('completedCount').textContent = todos.filter(t => t.completed).length;
+    }
+  </script>
+</body>
+</html>
