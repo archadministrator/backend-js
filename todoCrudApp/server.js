@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 app.use(express.json());
-app.use(express.static("public"));
+// app.use(express.static("public"));
 
 // Sample DB
 let todos = [
@@ -18,7 +18,7 @@ app.get("/todos/:id", (req, res)=>{
 
     if (!todo) return res.status(404).json({message: "Task not found"});
 
-    res.json(todo); 
+    res.json(todo);
 });
 
 
